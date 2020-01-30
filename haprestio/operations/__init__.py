@@ -1,2 +1,2 @@
-from . import install
-__all__ = ['install']
+from . import install, operations
+__all__ = ['install', 'operations']

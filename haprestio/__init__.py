@@ -9,3 +9,4 @@ else:
     app = Flask(__name__)
 
 import haprestio.main
+from haprestio.operations import *
