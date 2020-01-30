@@ -30,8 +30,7 @@ from google.cloud import storage
 
 from . import app
 
-app.config.from_pyfile('data/rapixy.cfg')
-app.wsgi_app = ProxyFix(app.wsgi_app)
+
 authorizations = {
     'apikey': {
         'type': 'apiKey',
@@ -2202,7 +2201,6 @@ def main():
     from haprestio.operations import install
 
     if install.arguments.install is not None:
-        print(install.arguments.install)
         install.install()
 
     if app.config['DEBUG']:
