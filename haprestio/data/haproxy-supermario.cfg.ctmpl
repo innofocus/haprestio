@@ -1,0 +1,67 @@
+# {{ plugin "/opt/consul-template/templates/haproxy-certs.py" }}
+# {{ range ls "haproxy/running/certs" }}{{ end }}
+
+frontend redirect
+  bind *:80
+  redirect scheme https code 301
+
+frontend passtcp
+  bind *:443
+  mode tcp
+  option tcplog
+  log /dev/log local0 debug
+  tcp-request inspect-delay 5s
+  tcp-request content accept if { req_ssl_hello_type 1 }
+{{ range ls "haproxy/running/frontends-tcp" }}
+  use_backend {{ .Value }}-tcp if { req_ssl_sni -i {{ .Key }} }
+{{ end }}
+{{ range ls "haproxy/running/frontends-tcp-extended" }}
+  {{ .Value }}
+{{ end }}
+  default_backend supermario
+
+backend supermario
+  mode tcp
+  option ssl-hello-chk
+  server localpipe 127.0.0.1:445
+
+frontend localpipe
+  bind 127.0.0.1:445 ssl crt supermario.pem crt-list /etc/haproxy/conf.d/certlist.txt alpn h2,http/1.1,http/1.0
+{{ keyOrDefault "haproxy/casting/config/localpipe" "  mode http\n  option httplog\n  log /dev/log local0 debug\n  acl rapixy-acl hdr(host) -i api.rpxy.vpodg1r7np.carrefour.com\n  use_backend rapixy-backend if rapixy-acl" }}
+{{ range ls "haproxy/running/frontends-http" }}
+  acl {{ .Value }} hdr(host) -i {{ .Key }}
+  use_backend {{ .Value }}-http if {{ .Value }}
+{{ end }}
+{{ range ls "haproxy/running/frontends-http-extended" }}
+  {{ .Value }}
+{{ end }}
+
+{{ range ls "haproxy/running/backends-tcp" }}
+backend {{ .Key }}-tcp
+  mode tcp
+{{ .Value | regexReplaceAll "^" "  " | regexReplaceAll "\n" "\n  " }}
+{{ end }}
+
+{{ range ls "haproxy/running/backends-http" }}
+backend {{ .Key }}-http
+{{ .Value | regexReplaceAll "^" "  " | regexReplaceAll "\n" "\n  " }}
+{{ end }}
+
+backend rapixy-backend
+  mode http
+  balance roundrobin
+{{ if keyExists "haproxy/maintenance" }}
+  http-request set-path /maintenance
+{{ end }}
+  server rapixy localhost:5080 weight 1 maxconn 100
+
+{{ with node }}
+{{ $jilt := printf "haproxy/jilting/%s" .Node.Node }}
+{{ if keyExists $jilt }}
+{{ else }}
+listen gcphealth
+  mode health
+  bind *:8082
+  option httpchk /ping
+{{ end }}
+{{ end }}

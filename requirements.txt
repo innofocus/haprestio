@@ -1,0 +1,12 @@
+cryptography==2.7
+requests
+Flask==1.0.2
+Flask-HTTPAuth==3.2.4
+flask-restplus==0.12.1
+flask-jwt-extended
+python-consul
+pyaml
+bcrypt
+pytest
+google-cloud-pubsub
+google-cloud-storage
