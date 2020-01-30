@@ -2199,13 +2199,11 @@ class Maintenance_R(Resource):
 
 def main():
     # modules
-    from operations import install
+    from haprestio.operations import install
 
     if install.arguments.install is not None:
         print(install.arguments.install)
         install.install()
-
-    exit(0)
 
     if app.config['DEBUG']:
         app.run(debug=True, host=app.config['HOST'], port=app.config['PORT'])
