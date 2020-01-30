@@ -27,52 +27,11 @@ import json
 # for backup onto google bucket
 from google.cloud import storage
 
-from . import app
-
-# show version consul_template config
-consul_template_tag = ""
-if os.path.exists('/opt/consul-template/templates/'):
-    consul_template_tag = str(int(os.path.getmtime('/opt/consul-template/templates/')))
-
-with open('haprestio/infos/version.txt') as f:
-    version = f.read().split('.')
-version_num = ".".join(version[0:3])
-version_aka = version[3]
-description = """
-<a href=/pages/releasenotes>Release Notes</a>
----
-Instance  : {instance}
-Version   : {version}
-Deploy tag: {version_tag}""".format(instance=app.config['INSTANCE'],
-                                    version=version_num,
-                                    version_tag=consul_template_tag)
-
-with open('haprestio/infos/ReleaseNotes.md') as f:
-    releasenotes = f.read().format(version_num=version_num, version_aka=version_aka)
-    f.close()
-
-class ProxyAPI(Api):
-    @property
-    def specs_url(self):
-        """
-        The Swagger specifications absolute url (ie. `swagger.json`)
-
-        :rtype: str
-        """
-        return url_for(self.endpoint('specs'), _external=False)
-
-
-authorizations = {
-    'apikey': {
-        'type': 'apiKey',
-        'in': 'header',
-        'name': app.config['APIKEY_NAME']
-    }
-}
+from . import *
 
 blueprint = Blueprint('rapixy', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
 api = ProxyAPI(blueprint,
-               version='v{} aka "{}"'.format(version_num, version_aka),
+               version=version_api,
                title='Rapixy({})'.format(app.config['INSTANCE']),
                description=description,
                authorizations=authorizations,
@@ -82,7 +41,7 @@ app.register_blueprint(api.blueprint)
 
 blueprint2 = Blueprint('rapixy_ops', __name__, url_prefix='/adm')
 api2 = ProxyAPI(blueprint2,
-                version='v{} aka "{}"'.format(version_num, version_aka),
+                version=version_api,
                 title='Rapixy({})'.format(app.config['INSTANCE']),
                 description=description,
                 authorizations=authorizations,
