@@ -8,4 +8,4 @@ if os.path.exists('/etc/rapixy/rapixy.cfg'):
 else:
     app = Flask(__name__)
 
-import Haprestio.haprestio
+import haprestio.main

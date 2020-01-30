@@ -38,9 +38,9 @@ with open('version.txt', "w") as f:
 subprocess.run('rm -rf build dist', shell=True)
 
 setup(
-    name='Haprestio',
+    name='haprestio',
     version='.'.join(version),
-    entry_points={"console_scripts": ['haprestio = Haprestio.haprestio:main']},
+    entry_points={"console_scripts": ['haprestio = haprestio.main:main']},
     description='rest api controlling haproxy on consul',
     long_description=readme,
     author='Caius Crypt',
@@ -48,7 +48,7 @@ setup(
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,
-    package_data={'Haprestio': ['data/[!_]*', 'deploy/*']},
+    package_data={'haprestio': ['data/[!_]*', 'deploy/*']},
     install_requires=requirements,
     packages=find_packages(exclude=('tests'))
 )

@@ -1,1 +1,1 @@
-# Haprestio, Haproxy Consul API
+# haprestio, Haproxy Consul API
