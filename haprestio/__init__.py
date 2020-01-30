@@ -1,6 +1,7 @@
 __all__ = ['haprestio']
 import os
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # app instance
 if os.path.exists('/etc/rapixy/haprestio.cfg'):

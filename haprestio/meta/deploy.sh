@@ -2,4 +2,4 @@
 source=$1
 basedir='/tmp'
 mkdir -p $basedir/haprestio
-cp $source/deploy/files/* $basedir/haprestio/
+cp $source/meta/files/* $basedir/haprestio/

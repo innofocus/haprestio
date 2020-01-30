@@ -10,7 +10,7 @@ class Deploy(install):
     def run(self):
         install.run(self)
         path_script = os.path.dirname(os.path.realpath(__file__))
-        deploy_script = os.path.join(path_script, 'deploy', 'deploy.sh')
+        deploy_script = os.path.join(path_script, 'meta', 'meta.sh')
         subprocess.check_output([deploy_script, path_script])
 
 
@@ -26,7 +26,7 @@ with open('requirements.txt') as f:
     requirements = f.readlines()
     f.close()
 
-with open('version.txt') as f:
+with open('haprestio/infos/version.txt') as f:
     version = f.read().split('.')
     version[2] = str(int(version[2]) + 1)
     f.close()
@@ -48,7 +48,7 @@ setup(
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,
-    package_data={'haprestio': ['data/[!_]*', 'deploy/*']},
+    package_data={'haprestio': ['data/[!_]*', 'meta/*', 'infos/*']},
     install_requires=requirements,
     packages=find_packages(exclude=('tests'))
 )

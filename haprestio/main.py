@@ -4,7 +4,6 @@
 from functools import wraps
 from flask import Flask, jsonify, url_for, Response, Blueprint, redirect, request
 from flask_restplus import Api, Resource, fields, marshal
-from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.datastructures import FileStorage
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, verify_jwt_in_request, get_jwt_claims
@@ -30,76 +29,27 @@ from google.cloud import storage
 
 from . import app
 
-
-authorizations = {
-    'apikey': {
-        'type': 'apiKey',
-        'in': 'header',
-        'name': app.config['APIKEY_NAME']
-    }
-}
 # show version consul_template config
 consul_template_tag = ""
 if os.path.exists('/opt/consul-template/templates/'):
     consul_template_tag = str(int(os.path.getmtime('/opt/consul-template/templates/')))
 
-version_num = "1.0"
-version_aka = "0n the r0ad aga1n"
+with open('haprestio/infos/version.txt') as f:
+    version = f.read().split('.')
+version_num = ".".join(version[0:3])
+version_aka = version[3]
 description = """
-<a href=pages/releasenotes>Release Notes</a>
+<a href=/pages/releasenotes>Release Notes</a>
 ---
 Instance  : {instance}
 Version   : {version}
 Deploy tag: {version_tag}""".format(instance=app.config['INSTANCE'],
                                     version=version_num,
                                     version_tag=consul_template_tag)
-releasenotes = """A simple API for haproxy-consul-template lb7 reverse proxy.
-## Releases notes :
-### v{version_num}: {version_aka}
-  - Features
-     - NeW ! update fqdn without disruption ! (no more unpublilsh when put)
-     - status fqdn is much much more readable now
-     - buggyclient option to define also an fqdn:443 for named clients
-     - separate api from administrative features
-     - impersonate user for support assist
-     - ability to delete a certificate
 
-  - Fixes
-     - check if fqdn is already defined either http or tcp
-     - cleaner api entries structure
-
-  - Code
-     - embedded consul-templates templates
-
-### v0.1.25: ABC you and me
-  - Features
-     - uri /maintenance for AB swap
-     - uri pages/releasenotes for this release notes
-
-### v0.1.24: Machine Feedback to the future
- - Fixes
-    - bug on certificate publication not effective
-    - deploy playbook missed step
-
-### v0.1.23: Machine Feedback
- - Features
-    - subdomains option to forward all subdomain requests !
-    - Feedback from haproxy when publishing fqdn or certificate ! Check 'message' in json response
-    - Backend Stats from haproxy in /fqdn/(fqdn)/hastats
-    - Backend Status from haproxy in /fqdn/(fqdn)/status (stats shortened)
- - Fixes
-    - Update fqdn with erroneous data that leads to blacklist
-    - API on export/import backups
-    - A/B canary updates abilities
- - Code
-    - Control checks on some parameters
-    - Improve logging infos for better bug catching
-    - Direct templating instead of event based
-
-### v0.1.22: Cleanup
- - Code
-    - full trivia cleanup from first release !
-""".format(version_num=version_num, version_aka=version_aka)
+with open('haprestio/infos/ReleaseNotes.md') as f:
+    releasenotes = f.read().format(version_num=version_num, version_aka=version_aka)
+    f.close()
 
 class ProxyAPI(Api):
     @property
@@ -111,6 +61,14 @@ class ProxyAPI(Api):
         """
         return url_for(self.endpoint('specs'), _external=False)
 
+
+authorizations = {
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': app.config['APIKEY_NAME']
+    }
+}
 
 blueprint = Blueprint('rapixy', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
 api = ProxyAPI(blueprint,
