@@ -29,34 +29,10 @@ from google.cloud import storage
 
 from . import *
 
-blueprint = Blueprint('rapixy', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
-api = ProxyAPI(blueprint,
-               version=version_api,
-               title='Rapixy({})'.format(app.config['INSTANCE']),
-               description=description,
-               authorizations=authorizations,
-               security='apikey'
-               )
-app.register_blueprint(api.blueprint)
-
-blueprint2 = Blueprint('rapixy_ops', __name__, url_prefix='/adm')
-api2 = ProxyAPI(blueprint2,
-                version=version_api,
-                title='Rapixy({})'.format(app.config['INSTANCE']),
-                description=description,
-                authorizations=authorizations,
-                security='apikey'
-                )
-app.register_blueprint(api2.blueprint)
+from haprestio.api_v1 import api_v1
+from haprestio.adm_v1 import adm_v1
 
 jwt = JWTManager(app)
-
-# serviceability
-if 'UWSGI' in app.config and not app.config['UWSGI']:
-    logging.info("Creating PID file.")
-    fh = open(app.config['PID_FILE'], "w")
-    fh.write(str(os.getpid()))
-    fh.close()
 
 ####
 # data instance
@@ -69,7 +45,7 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
-@api.errorhandler
+@api_v1.errorhandler
 def default_error_handler(error):
     """Default error handler"""
     return {'message': error.message}, 401
@@ -82,11 +58,11 @@ def admin_required(fn):
         try:
             verify_jwt_in_request()
         except:
-            api.abort(401, "Missing Authorization Header")
+            api_v1.abort(401, "Missing Authorization Header")
 
         claims = get_jwt_claims()
         if claims['roles'] != 'admin':
-            api.abort(401, "Token has expired, bad credentials or reserved for administrators")
+            api_v1.abort(401, "Token has expired, bad credentials or reserved for administrators")
         else:
             return fn(*args, **kwargs)
 
@@ -1376,26 +1352,26 @@ class Endpoint(DataEndpoints, object):
 
 ####
 # accounts
-get_token = api.namespace('login', description='Login with tenant ID and Secret/Token to get an Authorization token',
-                          ordered=True)
-get_token_m = api.model('login', {
+get_token = api_v1.namespace('login', description='Login with tenant ID and Secret/Token to get an Authorization token',
+                             ordered=True)
+get_token_m = api_v1.model('login', {
     'Authorization': fields.String(readOnly=True,
                                    description="Used in Header within Authorization field (clic the green Authorize)")})
-get_token2 = api2.namespace('login', description='Login with tenant ID and Secret/Token to get an Authorization token',
-                            ordered=True)
-get_token2_m = api2.model('login', {
+get_token2 = adm_v1.namespace('login', description='Login with tenant ID and Secret/Token to get an Authorization token',
+                              ordered=True)
+get_token2_m = adm_v1.model('login', {
     'Authorization': fields.String(readOnly=True,
                                    description="Used in Header within Authorization field (clic the green Authorize)")})
-tenant = api2.namespace('account', description='Rapixy account (reserved for Ops operations)', ordered=True)
-tenant_m = api2.model('account', {
+tenant = adm_v1.namespace('account', description='Rapixy account (reserved for Ops operations)', ordered=True)
+tenant_m = adm_v1.model('account', {
     'login': fields.String(readOnly=True, description='The tenant ID as an Rapixy account'),
     'password': fields.String(required=True, description='The Secret/Token as Rapixy account\'s password')
 })
 
 ####
 # Fqdns()
-fqdn_ns = api.namespace('fqdn', description='Fully Qualified Domain Name', ordered=True)
-fqdn_m = api.model('fqdn_request', {
+fqdn_ns = api_v1.namespace('fqdn', description='Fully Qualified Domain Name', ordered=True)
+fqdn_m = api_v1.model('fqdn_request', {
     'fqdn': fields.String(required=True, description='FQDN frontend response', example='myapp.vpod.carrefour.com'),
     'state': fields.String(required=False, description='authorized values : ' + ' or '.join(DataCasting("").states),
                            default=DataCasting("").states['publish'], example=DataCasting("").states['publish']),
@@ -1416,7 +1392,7 @@ fqdn_m = api.model('fqdn_request', {
                                     "server srv01 10.0.0.10:443 weight 1 maxconn 100 check",
                                     "server srv02 10.0.0.11:443 weight 1 maxconn 100 check"]),
 })
-fqdn_mr = api.inherit('fqdn_response', fqdn_m, {
+fqdn_mr = api_v1.inherit('fqdn_response', fqdn_m, {
     'message': fields.List(fields.String(
         description='messages from validation test (empty string when all is good)', default="''")),
     'spiid': fields.String(
@@ -1425,19 +1401,19 @@ fqdn_mr = api.inherit('fqdn_response', fqdn_m, {
 
 ####
 # publisher
-pub_ns = api.namespace('publish', description='publish and unpublish defined fqdn or certificate', ordered=True)
+pub_ns = api_v1.namespace('publish', description='publish and unpublish defined fqdn or certificate', ordered=True)
 
 ####
 # certs
-cert_ns = api.namespace('cert', description='Certificates manager', ordered=True)
-cert_m = api.model('cert_request', {
+cert_ns = api_v1.namespace('cert', description='Certificates manager', ordered=True)
+cert_m = api_v1.model('cert_request', {
     'cert': fields.String(required=True, description='FQDN frontend response', example='myapp.vpod.carrefour.com'),
     'state': fields.String(required=False, description='authorized values : ' + ' or '.join(DataCasting("").states),
                            default='publish', example='publish'),
     'fqdn': fields.String(required=True, description='associated fqdn'),
 })
 
-cert_mr = api.inherit('cert_response', cert_m, {
+cert_mr = api_v1.inherit('cert_response', cert_m, {
     'message': fields.List(fields.String(
         description='messages from validation test (empty string when all is good)', default="''")),
     'spiid': fields.String(
@@ -1453,7 +1429,7 @@ upload_cert.add_argument('name', required=True, help="The name of the certificat
 ####
 # adminops
 
-ops_ns = api2.namespace('ops', description='Administrative operations', ordered=True)
+ops_ns = adm_v1.namespace('ops', description='Administrative operations', ordered=True)
 
 upload_json = ops_ns.parser()
 upload_json.add_argument('file', location='files',
@@ -1479,12 +1455,12 @@ class UserLogin(Resource):
         """Login to retrieve a temporary Authorization token"""
         if not Account(name).exists():
             time.sleep(1)
-            api.abort(401, "Bad credentials")
+            api_v1.abort(401, "Bad credentials")
         if Account(name).check(password):
             access_token = create_access_token(identity=name)
             return jsonify(access_token=access_token)
         else:
-            api.abort(401, "Bad credentials")
+            api_v1.abort(401, "Bad credentials")
 
 
 @get_token2.route('/name=<string:name>/password=<string:password>')
@@ -1501,12 +1477,12 @@ class UserLogin2(Resource):
         """Login to retrieve a temporary Authorization token"""
         if not Account(name).exists():
             time.sleep(1)
-            api.abort(401, "Bad credentials")
+            api_v1.abort(401, "Bad credentials")
         if Account(name).check(password):
             access_token = create_access_token(identity=name)
             return jsonify(access_token=access_token)
         else:
-            api.abort(401, "Bad credentials")
+            api_v1.abort(401, "Bad credentials")
 
 
 @get_token2.route('/impersonate=<string:name>')
@@ -1523,7 +1499,7 @@ class Impersonate(Resource):
         """Get temporary Authorization token for account"""
         if not Account(name).exists():
             time.sleep(1)
-            api.abort(401, "Bad account")
+            api_v1.abort(401, "Bad account")
         access_token = create_access_token(identity=name)
         return jsonify(access_token=access_token)
 
@@ -1571,7 +1547,7 @@ class Accounts_R(Resource):
     # @tenant.marshal_with(tenant_m, code=201)
     def post(self):
         """Create a new account"""
-        return Account().create(api.payload).json(), 201
+        return Account().create(api_v1.payload).json(), 201
 
 
 @tenant.route('/<string:account>')
@@ -1610,7 +1586,7 @@ class Account_R(Resource):
             tenant.abort(401, "bad credentials")
         if not accts.exists(account):
             tenant.abort(404, 'Account not found')
-        return Account(account).change(api.payload['password'])
+        return Account(account).change(api_v1.payload['password'])
 
 
 @fqdn_ns.route('', endpoint='fqdn')
@@ -1636,11 +1612,11 @@ class Fqdns_R(Resource):
     @fqdn_ns.marshal_with(fqdn_mr)
     def post(self):
         """Create a new fqdn entry"""
-        api.payload.update({'owner': get_jwt_identity()})
-        if Fqdn(api.payload['fqdn']).exists():
+        api_v1.payload.update({'owner': get_jwt_identity()})
+        if Fqdn(api_v1.payload['fqdn']).exists():
             fqdn_ns.abort(409, "Can't create already present 'fqdn' fqdn")
             return
-        f = Fqdn().create(api.payload)
+        f = Fqdn().create(api_v1.payload)
         if not f.is_publish_fail():
             return f.json(), 201
         else:
@@ -1678,7 +1654,7 @@ class Fqdn_R(Resource):
             fqdn_ns.abort(400, "can't modify non-existent fqdn")
         if Fqdn(fqdn).owner != get_jwt_identity() and get_jwt_claims()['roles'] != 'admin':
             fqdn_ns.abort(401, "you don't own this fqdn")
-        f = Fqdn(fqdn).update(api.payload)
+        f = Fqdn(fqdn).update(api_v1.payload)
         if f.is_publish_fail():
             return f.json(), 406
         else:

@@ -1,4 +1,5 @@
-import argparse, os
+import argparse, os, logging
+from haprestio import app
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -7,6 +8,12 @@ def argparser():
 
 def install():
     print('/'.join(__file__.split('/')[0:-2]))
-    print('ok')
+
+    # serviceability
+    if 'UWSGI' in app.config and not app.config['UWSGI']:
+        logging.info("Creating PID file.")
+        fh = open(app.config['PID_FILE'], "w")
+        fh.write(str(os.getpid()))
+        fh.close()
 
 arguments = argparser()
