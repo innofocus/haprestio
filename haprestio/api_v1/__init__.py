@@ -1,5 +1,12 @@
+
 from flask import Blueprint
+from flask_restplus import fields
+from werkzeug.datastructures import FileStorage
+
 from haprestio import *
+from ..data.data import DataCasting, DataEndpoints
+
+__all__ = ['certs', 'login', 'fqdns', 'pub']
 
 blueprint = Blueprint('rapixy', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
 api_v1 = ProxyAPI(blueprint,
@@ -78,3 +85,10 @@ upload_cert = cert_ns.parser()
 upload_cert.add_argument('file', location='files',
                          type=FileStorage, required=True)
 upload_cert.add_argument('name', required=True, help="The name of the certificate")
+
+
+@api_v1.errorhandler
+def default_error_handler(error):
+    """Default error handler"""
+    return {'message': error.message}, 401
+

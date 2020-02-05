@@ -1,5 +1,5 @@
 import yaml
-__all__ = ['accounts', 'certs', 'data', 'endpoints', 'fqdns', 'DataModel']
+__all__ = ['accounts', 'certs', 'data', 'endpoints', 'fqdns', 'DataModel', "accts"]
 
 DataModel = yaml.safe_load("""\
 haproxy:
@@ -55,4 +55,9 @@ haproxy:
        name:
          - content
 """)
+
+from .accounts import Accounts
+from .. import app
+
+accts = Accounts(app.config['ADMINNAME'], app.config['INITPASS'])
 
