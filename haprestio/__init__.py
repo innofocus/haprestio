@@ -4,20 +4,20 @@ from flask import Flask, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_restplus import Api
 
-from haprestio.operations import arguments
+from haprestio.operations import parser
 
 ####
 # error hanlding
-FORMAT = "[%(levelname)s:%(pathname)s:%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+FORMAT = "[ %(levelname)s:%(pathname)s:%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 # app instance
-logging.info("looking for: {}/haprestio.cfg".format(arguments.args.install_dir))
+logging.info("looking for: {}/haprestio.cfg".format(parser.args.install_dir))
 
-if os.path.exists("{}/haprestio.cfg".format(arguments.args.install_dir)):
-    app = Flask(__name__, instance_path=arguments.args.install_dir, instance_relative_config=True)
+if os.path.exists("{}/haprestio.cfg".format(parser.args.install_dir)):
+    app = Flask(__name__, instance_path=parser.args.install_dir, instance_relative_config=True)
 else:
-    logging.info("{}/haprestio.cfg not found".format(arguments.args.install_dir))
+    logging.info("{}/haprestio.cfg not found".format(parser.args.install_dir))
     app = Flask(__name__, instance_path="%s/%s" % (os.path.dirname(__file__), '/data'), instance_relative_config=True)
 
 logging.info("using configuration dir: {}".format(app.instance_path))

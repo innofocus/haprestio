@@ -2088,11 +2088,11 @@ class Maintenance_R(Resource):
 
 def main():
     # modules
-    from haprestio.operations import arguments, install
+    from haprestio.operations import parser, install
 
-
-    if arguments.args.install:
-        install.install(arguments.args)
+    if parser.args.install:
+        install.templates(parser.args)
+        exit(0)
 
     if app.config['DEBUG']:
         app.run(debug=True, host=app.config['HOST'], port=app.config['PORT'])

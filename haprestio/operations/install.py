@@ -3,7 +3,7 @@ from haprestio import app
 
 install_source = '/'.join(__file__.split('/')[0:-2])
 
-def install(args):
+def templates(args):
     # setup in /etc
 
     # if in development mode, flask will rerun...
