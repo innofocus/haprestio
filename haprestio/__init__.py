@@ -32,13 +32,16 @@ consul_template_tag = ""
 if os.path.exists('/opt/consul-template/templates/'):
     consul_template_tag = str(int(os.path.getmtime('/opt/consul-template/templates/')))
 
-with open('haprestio/infos/version.txt') as f:
+#####
+# vresions infos
+install_source = '/'.join(__file__.split('/')[0:-2])
+with open('{}/haprestio/infos/version.txt'.format(install_source)) as f:
     version = f.read().split('.')
 
 version_num = ".".join(version[0:3])
 version_aka = version[3]
 
-with open('haprestio/infos/ReleaseNotes.md') as f:
+with open('{}/haprestio/infos/ReleaseNotes.md'.format(install_source)) as f:
     releasenotes = f.read().format(version_num=version_num, version_aka=version_aka)
     f.close()
 

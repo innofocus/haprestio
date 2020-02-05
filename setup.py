@@ -31,7 +31,7 @@ with open('haprestio/infos/version.txt') as f:
     version[2] = str(int(version[2]) + 1)
     f.close()
 
-with open('version.txt', "w") as f:
+with open('haprestio/infos/version.txt', "w") as f:
     f.write('.'.join(version))
     f.close()
 
