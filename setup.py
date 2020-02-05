@@ -48,7 +48,7 @@ setup(
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,
-    package_data={'haprestio': ['data/[!_]*', 'meta/*', 'infos/*']},
+    package_data={'haprestio': ['files/[!_]*', 'meta/*', 'infos/*']},
     install_requires=requirements,
     packages=find_packages(exclude=('tests'))
 )

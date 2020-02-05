@@ -18,7 +18,7 @@ if os.path.exists("{}/haprestio.cfg".format(parser.args.install_dir)):
     app = Flask(__name__, instance_path=parser.args.install_dir, instance_relative_config=True)
 else:
     logging.info("{}/haprestio.cfg not found".format(parser.args.install_dir))
-    app = Flask(__name__, instance_path="%s/%s" % (os.path.dirname(__file__), '/data'), instance_relative_config=True)
+    app = Flask(__name__, instance_path="%s/%s" % (os.path.dirname(__file__), 'files'), instance_relative_config=True)
 
 logging.info("using configuration dir: {}".format(app.instance_path))
 # app config

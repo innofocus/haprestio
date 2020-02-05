@@ -8,7 +8,7 @@ def templates(args):
 
     # if in development mode, flask will rerun...
     if not os.path.exists(args.install_dir):
-        shutil.copytree(install_source+'/data/', args.install_dir)
+        shutil.copytree(install_source+'/files/', args.install_dir)
     else:
         logging.info("Install already done")
 
