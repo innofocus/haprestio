@@ -36,11 +36,6 @@ from haprestio.adm_v1 import adm_v1
 # temp token
 jwt = JWTManager(app)
 
-####
-# data instance
-concon = consul.Consul(app.config['CONSUL_HOST'], app.config['CONSUL_PORT'])
-
-
 
 @api_v1.errorhandler
 def default_error_handler(error):
@@ -246,9 +241,11 @@ class Haproxy(object):
 class ConsulDataMixin(object):
     """ Mixin for Consulxxx classes, with self.path and self.props the appropriate consul key structure"""
 
+    conscon = consul.Consul(app.config['CONSUL_HOST'], app.config['CONSUL_PORT'])
+
     @property
     def node(self):
-        return str(concon.agent.self()['Member']['Name'])
+        return str(self.conscon.agent.self()['Member']['Name'])
 
     def _isfolder(self):
         return self.path[-1] == '/'
@@ -259,7 +256,7 @@ class ConsulDataMixin(object):
         if 'props' in vars(self):
             result = {}
             for p in self.props:
-                r = concon.kv.get(self.path + key + '/' + p)[1]
+                r = self.conscon.kv.get(self.path + key + '/' + p)[1]
                 if isinstance(r, dict):
                     r = r['Value'].decode('utf-8')
                 if r is not None:
@@ -269,7 +266,7 @@ class ConsulDataMixin(object):
             else:
                 return result
         else:
-            result = concon.kv.get(self.path + key)[1]
+            result = self.conscon.kv.get(self.path + key)[1]
             if isinstance(result, dict) and 'Value' in result:
                 if isinstance(result['Value'], bytes):
                     return result['Value'].decode('utf-8')
@@ -281,7 +278,7 @@ class ConsulDataMixin(object):
     def load(self):
         if 'props' in vars(self):
             for p in self.props:
-                r = concon.kv.get(self.path + '/' + p)[1]
+                r = self.conscon.kv.get(self.path + '/' + p)[1]
                 if isinstance(r, dict):
                     r = r['Value']
                     if r is None:
@@ -292,21 +289,21 @@ class ConsulDataMixin(object):
                     r = ""
                 self.__setattr__(p, r)
         else:
-            result = concon.kv.get(self.path + '/' + self.key)[1]
+            result = self.conscon.kv.get(self.path + '/' + self.key)[1]
             if isinstance(result, dict) and 'Value' in result:
                 self.__setattr__('content', result)
 
     def exists(self, key=""):
         if key != "" and not self._isfolder():
             key = '/' + key
-        result = concon.kv.get(self.path + key)[1]
+        result = self.conscon.kv.get(self.path + key)[1]
         if isinstance(result, dict):
             if 'Key' in result:
                 return True
             else:
                 return False
         if result is None:
-            if concon.kv.get(self.path + key, keys=True)[1] is None:
+            if self.conscon.kv.get(self.path + key, keys=True)[1] is None:
                 return False
             else:
                 return True
@@ -315,7 +312,7 @@ class ConsulDataMixin(object):
     def list(self, key=""):
         if self._isfolder():
             result = []
-            objlist = concon.kv.get(self.path + key, keys=True)[1]
+            objlist = self.conscon.kv.get(self.path + key, keys=True)[1]
             if not isinstance(objlist, list):
                 return []
             if self.path in objlist:
@@ -354,9 +351,9 @@ class ConsulDataMixin(object):
         """ can take props dict or simple value into props[0] when only one props"""
         if 'props' in vars(self):
             for p in self.props:
-                concon.kv.put(self.path + '/' + p, vars(self)[p])
+                self.conscon.kv.put(self.path + '/' + p, vars(self)[p])
         else:
-            concon.kv.put(self.path, self.value)
+            self.conscon.kv.put(self.path, self.value)
         return self
 
     def add(self, key, value=""):
@@ -367,11 +364,11 @@ class ConsulDataMixin(object):
             if len(self.props) > 1:
                 for p in self.props:
                     if p in value:
-                        concon.kv.put(self.path + key + '/' + p, str(value[p]))
+                        self.conscon.kv.put(self.path + key + '/' + p, str(value[p]))
             else:
-                concon.kv.put(self.path + key + '/' + self.props[0], str(value))
+                self.conscon.kv.put(self.path + key + '/' + self.props[0], str(value))
         else:
-            concon.kv.put(self.path + key, value)
+            self.conscon.kv.put(self.path + key, value)
         self.load()
         return True
 
@@ -384,10 +381,10 @@ class ConsulDataMixin(object):
                         vars(self)[p] = str('\n'.join(value[p]))
                     else:
                         vars(self)[p] = value[p]
-                    concon.kv.put(self.path + '/' + p, vars(self)[p])
+                    self.conscon.kv.put(self.path + '/' + p, vars(self)[p])
             return self
         else:
-            if concon.kv.put(self.path, value):
+            if self.conscon.kv.put(self.path, value):
                 return self
             else:
                 return None
@@ -399,7 +396,7 @@ class ConsulDataMixin(object):
             return False
         if 'props' in vars(self) or key != "":
             recurse = True
-        return concon.kv.delete(self.path + key, recurse=recurse)
+        return self.conscon.kv.delete(self.path + key, recurse=recurse)
 
 
 class DataBase(ConsulDataMixin, object):
