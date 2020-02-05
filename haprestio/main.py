@@ -32,17 +32,14 @@ from . import *
 from haprestio.api_v1 import api_v1
 from haprestio.adm_v1 import adm_v1
 
+####
+# temp token
 jwt = JWTManager(app)
 
 ####
 # data instance
 concon = consul.Consul(app.config['CONSUL_HOST'], app.config['CONSUL_PORT'])
 
-
-####
-# error hanlding
-FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
-logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
 @api_v1.errorhandler
@@ -2091,10 +2088,11 @@ class Maintenance_R(Resource):
 
 def main():
     # modules
-    from haprestio.operations import install
+    from haprestio.operations import arguments, install
 
-    if install.arguments.install is not None:
-        install.install()
+
+    if arguments.args.install:
+        install.install(arguments.args)
 
     if app.config['DEBUG']:
         app.run(debug=True, host=app.config['HOST'], port=app.config['PORT'])

@@ -1,15 +1,26 @@
 __all__ = ['app', 'ProxyAPI', 'version_api', 'releasenotes', 'description', 'authorizations']
-import os
+import os, logging
 from flask import Flask, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_restplus import Api
 
+from haprestio.operations import arguments
+
+####
+# error hanlding
+FORMAT = "[%(levelname)s:%(pathname)s:%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+logging.basicConfig(format=FORMAT, level=logging.INFO)
+
 # app instance
-if os.path.exists('/etc/rapixy/haprestio.cfg'):
-    app = Flask(__name__, instance_path='/etc/rapixy', instance_relative_config=True)
+logging.info("looking for: {}/haprestio.cfg".format(arguments.args.install_dir))
+
+if os.path.exists("{}/haprestio.cfg".format(arguments.args.install_dir)):
+    app = Flask(__name__, instance_path=arguments.args.install_dir, instance_relative_config=True)
 else:
+    logging.info("{}/haprestio.cfg not found".format(arguments.args.install_dir))
     app = Flask(__name__, instance_path="%s/%s" % (os.path.dirname(__file__), '/data'), instance_relative_config=True)
 
+logging.info("using configuration dir: {}".format(app.instance_path))
 # app config
 app.config.from_pyfile('haprestio.cfg')
 app.wsgi_app = ProxyFix(app.wsgi_app)
