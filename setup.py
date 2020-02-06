@@ -37,6 +37,10 @@ with open('haprestio/infos/version.txt', "w") as f:
 
 subprocess.run('rm -rf build dist', shell=True)
 
+data_files = [ '/'.join(x[0].split('/')[1:])+"/*" for x in os.walk('haprestio/files') ]
+data_files.append('meta/*')
+data_files.append('infos/*')
+
 setup(
     name='haprestio',
     version='.'.join(version),
@@ -48,7 +52,7 @@ setup(
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,
-    package_data={'haprestio': ['files/[!_]*', 'meta/*', 'infos/*']},
+    package_data={'haprestio': data_files},
     install_requires=requirements,
-    packages=find_packages(exclude=('tests'))
+    packages=find_packages(exclude=['tests', 'files'])
 )

@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-source=$1
-basedir='/tmp'
-mkdir -p $basedir/haprestio
-cp $source/meta/files/* $basedir/haprestio/
+#!/usr/bin/env sh
+
+mkdir -p /etc/haproxy/conf.d
+chmod 755 /etc/haprestio/consul-template/helpers/*

@@ -4,6 +4,11 @@ import consul
 import hashlib
 import logging
 
+config_file = '/etc/haprestio/haprestio.cfg'
+config = dict()
+with open(config_file, 'rb') as cfgfile:
+    exec(compile(cfgfile.read(), config_file,'exec'), config )
+
 logging.basicConfig(filename='/var/log/rapixy-helpers.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
@@ -19,12 +24,12 @@ runningCertDir = "/etc/ssl/private/"
 supermariocert = "supermario.pem"
 certlistfile = "/etc/haproxy/conf.d/certlist.txt"
 
-haproxyrestart = "/opt/consul-template/templates/haproxy-restart.sh /etc/haproxy/conf.d/haproxy.cfg"
+haproxyrestart = "/etc/haprestio/consul-template/helpers/haproxy-restart.sh /etc/haproxy/conf.d/haproxy.cfg"
 
 # generate cert list
 certlist = []
 
-concon = consul.Consul()
+concon = consul.Consul(config['CONSUL_HOST'], config['CONSUL_PORT'])
 
 
 def getIndex(key):

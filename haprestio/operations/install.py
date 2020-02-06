@@ -1,4 +1,4 @@
-import os, logging, shutil
+import os, logging, shutil, subprocess
 from haprestio import app
 
 install_source = '/'.join(__file__.split('/')[0:-2])
@@ -18,3 +18,6 @@ def templates(args):
         fh = open(app.config['PID_FILE'], "w")
         fh.write(str(os.getpid()))
         fh.close()
+
+def deploy():
+    subprocess.run('/'.join(__file__.split('/')[:-2])+'/meta/deploy.sh')

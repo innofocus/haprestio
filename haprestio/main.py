@@ -55,6 +55,7 @@ def main():
 
     if parser.args.install:
         install.templates(parser.args)
+        install.deploy()
         exit(0)
 
     from . import api_v1

@@ -11,12 +11,16 @@ RUN python3 /tmp/get-pip.py
 
 # installs haprestio
 RUN pip install grpcio bcrypt cryptography flask-jwt-extended grpc-google-iam-v1 PyYAML googleapis-common-protos MarkupSafe pyrsistent
-COPY haprestio-0.1.88.Once.upon.a.time-py2.py3-none-any.whl /tmp
+COPY *.whl /tmp
 RUN pip install /tmp/*whl
 
 # configure haprestio
 RUN haprestio -i -d /etc/haprestio
 COPY haprestio.cfg  /etc/haprestio
+
+# installs haproxy and consul-template
+RUN apk add haproxy
+RUN cd /usr/local/bin && curl https://releases.hashicorp.com/consul-template/0.24.1/consul-template_0.24.1_linux_amd64.tgz | tar zxvf -
 
 # cleanup files
 RUN rm /tmp/get-pip.py /tmp/*whl
