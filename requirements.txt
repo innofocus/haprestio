@@ -1,8 +1,8 @@
-cryptography==2.7
+cryptography
 requests
-Flask==1.0.2
-Flask-HTTPAuth==3.2.4
-flask-restplus==0.12.1
+Flask
+Flask-HTTPAuth
+flask-restplus
 flask-jwt-extended
 python-consul
 pyaml

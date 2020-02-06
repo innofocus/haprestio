@@ -13,7 +13,6 @@ adm_v1 = ProxyAPI(blueprint2,
                   authorizations=authorizations,
                   security='apikey'
                   )
-app.register_blueprint(adm_v1.blueprint)
 
 ####
 # accounts
@@ -39,3 +38,8 @@ ops_ns = adm_v1.namespace('ops', description='Administrative operations', ordere
 upload_json = ops_ns.parser()
 upload_json.add_argument('file', location='files',
                          type=FileStorage, required=True)
+
+from . import *
+
+def init():
+    app.register_blueprint(adm_v1.blueprint)

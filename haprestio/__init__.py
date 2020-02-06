@@ -78,5 +78,3 @@ authorizations = {
 
 import haprestio.main
 from haprestio.operations import *
-from haprestio.api_v1 import *
-from haprestio.adm_v1 import *

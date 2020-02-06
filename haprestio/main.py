@@ -51,11 +51,17 @@ def ReleaseNotes():
 
 def main():
     # modules
-    from haprestio.operations import parser, install
+    from .operations import parser, install
 
     if parser.args.install:
         install.templates(parser.args)
         exit(0)
+
+    from . import api_v1
+    api_v1.init()
+
+    from . import adm_v1
+    adm_v1.init()
 
     if app.config['DEBUG']:
         app.run(debug=True, host=app.config['HOST'], port=app.config['PORT'])

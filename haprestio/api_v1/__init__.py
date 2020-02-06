@@ -16,7 +16,6 @@ api_v1 = ProxyAPI(blueprint,
                   authorizations=authorizations,
                   security='apikey'
                   )
-app.register_blueprint(api_v1.blueprint)
 
 ####
 # accounts
@@ -92,3 +91,7 @@ def default_error_handler(error):
     """Default error handler"""
     return {'message': error.message}, 401
 
+from . import *
+
+def init():
+    app.register_blueprint(api_v1.blueprint)
