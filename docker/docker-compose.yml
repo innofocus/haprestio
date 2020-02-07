@@ -3,6 +3,7 @@ version: '3'
 services:
 
   haprestio:
+    image: haprestio:latest
     build: haprestio
     networks:
       - haprestio-test
