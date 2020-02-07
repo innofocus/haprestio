@@ -8,10 +8,10 @@ from ..data.data import DataCasting, DataEndpoints
 
 __all__ = ['certs', 'login', 'fqdns', 'pub']
 
-blueprint = Blueprint('rapixy', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
+blueprint = Blueprint('haprestio', __name__, url_prefix=app.config['DEFAULT_LOCATION'])
 api_v1 = ProxyAPI(blueprint,
                   version=version_api,
-                  title='Rapixy({})'.format(app.config['INSTANCE']),
+                  title='haprestio({})'.format(app.config['INSTANCE']),
                   description=description,
                   authorizations=authorizations,
                   security='apikey'
@@ -31,7 +31,7 @@ get_token_m = api_v1.model('login', {
 # Fqdns()
 fqdn_ns = api_v1.namespace('fqdn', description='Fully Qualified Domain Name', ordered=True)
 fqdn_m = api_v1.model('fqdn_request', {
-    'fqdn': fields.String(required=True, description='FQDN frontend response', example='myapp.vpod.carrefour.com'),
+    'fqdn': fields.String(required=True, description='FQDN frontend response', example='this.that.com'),
     'state': fields.String(required=False, description='authorized values : ' + ' or '.join(DataCasting("").states),
                            default=DataCasting("").states['publish'], example=DataCasting("").states['publish']),
     'mode': fields.String(
@@ -66,7 +66,7 @@ pub_ns = api_v1.namespace('publish', description='publish and unpublish defined 
 # certs
 cert_ns = api_v1.namespace('cert', description='Certificates manager', ordered=True)
 cert_m = api_v1.model('cert_request', {
-    'cert': fields.String(required=True, description='FQDN frontend response', example='myapp.vpod.carrefour.com'),
+    'cert': fields.String(required=True, description='FQDN frontend response', example='this.that.com'),
     'state': fields.String(required=False, description='authorized values : ' + ' or '.join(DataCasting("").states),
                            default='publish', example='publish'),
     'fqdn': fields.String(required=True, description='associated fqdn'),

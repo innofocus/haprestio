@@ -9,7 +9,7 @@ config = dict()
 with open(config_file, 'rb') as cfgfile:
     exec(compile(cfgfile.read(), config_file,'exec'), config )
 
-logging.basicConfig(filename='/var/log/rapixy-helpers.log',
+logging.basicConfig(filename='/var/log/haprestio-helpers.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%D %H:%M:%S',

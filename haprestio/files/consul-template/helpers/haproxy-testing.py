@@ -5,7 +5,7 @@ import consul
 import datetime
 import logging
 
-logging.basicConfig(filename='/var/log/rapixy-helpers.log',
+logging.basicConfig(filename='/var/log/haprestio-helpers.log',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%D %H:%M:%S',

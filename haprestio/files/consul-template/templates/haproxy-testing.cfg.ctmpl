@@ -29,7 +29,7 @@ backend supermario
 
 frontend localpipe
   bind 127.0.0.1:445 ssl crt supermario.pem crt-list /etc/haproxy/conf.d/certlist.txt{{ range ls (printf "%s/certs" $testfolder) }} crt /etc/ssl/testing/{{ .Key }}.pem{{ end }} alpn h2,http/1.1,http/1.0
-{{ keyOrDefault "haproxy/casting/config/localpipe" "  mode http\n  option httplog\n  log /dev/log local0 debug\n  acl rapixy-acl hdr(host) -i api.rpxy.vpodg1r7np.carrefour.com\n  use_backend rapixy-backend if rapixy-acl" }}
+{{ keyOrDefault "haproxy/casting/config/localpipe" "  mode http\n  option httplog\n  log /dev/log local0 debug\n  acl haprestio-acl hdr(host) -i haprestio.that.com\n  use_backend haprestio-backend if haprestio-acl" }}
 {{ range ls (printf "%s/frontends-http" $testfolder) }}
   acl {{ .Value }} hdr(host) -i {{ .Key }}
   use_backend {{ .Value }}-http if {{ .Value }}
@@ -50,7 +50,7 @@ backend {{ .Key }}-http
 {{ .Value | regexReplaceAll "^" "  " | regexReplaceAll "\n" "\n  " }}
 {{ end }}
 
-backend rapixy-backend
+backend haprestio-backend
   mode http
   balance roundrobin
-  server rapixy localhost:5080 weight 1 maxconn 100
+  server haprestio localhost:5080 weight 1 maxconn 100

@@ -48,7 +48,7 @@ setup(
     description='rest api controlling haproxy on consul',
     long_description=readme,
     author='Caius Crypt',
-    author_email='caius.crypt@gmail.com',
+    author_email='caius.crypt<at>gmail.com',
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,

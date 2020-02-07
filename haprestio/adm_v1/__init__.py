@@ -5,10 +5,10 @@ from werkzeug.datastructures import FileStorage
 from haprestio import *
 __all__ = ['accounts', 'login', 'operations']
 
-blueprint2 = Blueprint('rapixy_ops', __name__, url_prefix='/adm')
+blueprint2 = Blueprint('haprestio_ops', __name__, url_prefix='/adm')
 adm_v1 = ProxyAPI(blueprint2,
                   version=version_api,
-                  title='Rapixy({})'.format(app.config['INSTANCE']),
+                  title='haprestio({})'.format(app.config['INSTANCE']),
                   description=description,
                   authorizations=authorizations,
                   security='apikey'
@@ -23,10 +23,10 @@ get_token2 = adm_v1.namespace('login',
 get_token2_m = adm_v1.model('login', {
     'Authorization': fields.String(readOnly=True,
                                    description="Used in Header within Authorization field (clic the green Authorize)")})
-tenant = adm_v1.namespace('account', description='Rapixy account (reserved for Ops operations)', ordered=True)
+tenant = adm_v1.namespace('account', description='haprestio account (reserved for Ops operations)', ordered=True)
 tenant_m = adm_v1.model('account', {
-    'login': fields.String(readOnly=True, description='The tenant ID as an Rapixy account'),
-    'password': fields.String(required=True, description='The Secret/Token as Rapixy account\'s password')
+    'login': fields.String(readOnly=True, description='The tenant ID as an haprestio account'),
+    'password': fields.String(required=True, description='The Secret/Token as haprestio account\'s password')
 })
 
 

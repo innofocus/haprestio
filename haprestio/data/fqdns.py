@@ -301,9 +301,9 @@ class Fqdn(DataCasting, object):
         # cleanup failing
         if self.failpoint_backend.exists():
             self.failpoint_backend.delete(recurse=True)
-            logging.info(' rapixy publish : delete logfail backend {}'.format(self.backend_name))
+            logging.info(' haprestio publish : delete logfail backend {}'.format(self.backend_name))
 
-        logging.info(' rapixy publish : test push backend {}'.format(self.backend_name))
+        logging.info(' haprestio publish : test push backend {}'.format(self.backend_name))
         self.testpoint_backend.update(self.backend)
 
         validate = ConsulTemplate(self.spiid)
@@ -321,9 +321,9 @@ class Fqdn(DataCasting, object):
         # cleanup failing
         if self.failpoint_frontend.exists():
             self.failpoint_frontend.delete(recurse=True)
-            logging.info(' rapixy publish : delete logfail frontend {}'.format(self.backend_name))
+            logging.info(' haprestio publish : delete logfail frontend {}'.format(self.backend_name))
 
-        logging.info(' rapixy publish : test push frontend {}'.format(self.backend_name))
+        logging.info(' haprestio publish : test push frontend {}'.format(self.backend_name))
         self.testpoint_frontend.update(self.frontend_content)
 
         validate = ConsulTemplate(self.spiid)
