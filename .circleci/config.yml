@@ -50,3 +50,12 @@ jobs:
           name: check app
           command: |
             curl http://localhost:5080/swagger.json > test-results/output.txt
+
+workflows:
+  version: 2
+  letsgo:
+    jobs:
+      - build
+      - tests:
+          requires:
+            - build
