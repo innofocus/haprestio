@@ -21,8 +21,6 @@ import requests
 import csv
 import json
 
-# for backup onto google bucket
-from google.cloud import storage
 
 from . import *
 

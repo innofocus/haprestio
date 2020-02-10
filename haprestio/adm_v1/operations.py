@@ -86,35 +86,6 @@ class Ops_export_json_R(Resource):
         """ export  consul database in json format"""
         return Operations().export_json()
 
-
-@ops_ns.route('/backup', endpoint='backup_json')
-class Backup_R(Resource):
-    """" Administratives operations on backups"""
-
-    @admin_required
-    @ops_ns.doc('backup consul database in json format on gcp bucket', security='apikey')
-    def put(self):
-        """ backup consul database in json format on gcp bucket """
-        return Operations().backup_json()
-
-    @admin_required
-    @ops_ns.doc('list backups from gcp bucket', security='apikey')
-    def get(self):
-        """ list backups from gcp bucket """
-        return Operations().backup_list()
-
-
-@ops_ns.route('/restore/<string:backupname>', endpoint='restore_json')
-class Restore_R(Resource):
-    """" Administratives operations on restore"""
-
-    @admin_required
-    @ops_ns.doc('restore backup from gcp bucket', security='apikey')
-    def post(self, backupname):
-        """ restore consul database from gcp bucket backups"""
-        return Operations().restore_json(backupname=backupname)
-
-
 @ops_ns.route('/jilt', endpoint='ops_jilt')
 class Ops_jilt_R(Resource):
     """" Administratives operations"""
