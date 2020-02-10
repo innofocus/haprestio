@@ -3,7 +3,7 @@ version: '3'
 services:
 
   haprestio:
-    image: haprestio:latest
+    image: innofocus/private:haprestio
     build: docker
     networks:
       - haprestio-test

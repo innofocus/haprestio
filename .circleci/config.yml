@@ -24,7 +24,9 @@ jobs:
       - run:
           name: build container
           command: |
-            docker-compose build haprestio
+            docker-compose build
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
+            docker push innofocus/private:haprestio
 
       - store_test_results:
          path: test-results
@@ -44,6 +46,7 @@ jobs:
       - run:
           name: run compose
           command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
             docker-compose up -d
 
       - run:
