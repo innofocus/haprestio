@@ -58,7 +58,4 @@ workflows:
   version: 2
   letsgo:
     jobs:
-      - build
-      - tests:
-          requires:
-            - build
+      - tests
