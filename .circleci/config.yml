@@ -59,13 +59,11 @@ jobs:
       - run:
           name: check app
           command: |
+            mkdir test-results
             curl http://localhost:5080/api/v1/swagger.json > test-results/output.txt
 
 workflows:
   version: 2
   letsgo:
     jobs:
-      - build
-      - tests:
-          requires:
-            - build
+      - tests
