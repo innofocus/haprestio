@@ -26,7 +26,12 @@ jobs:
           command: |
             docker-compose build
             echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
-            docker push innofocus/private:haprestio
+            docker push innofocus/haprestio:latest
+
+      - run:
+          name: artefacts dir
+          command: |
+            mkdir test-results
 
       - store_test_results:
          path: test-results
@@ -52,10 +57,13 @@ jobs:
       - run:
           name: check app
           command: |
-            curl http://localhost:5080/swagger.json > test-results/output.txt
+            curl http://localhost:5080/api/v1/swagger.json > test-results/output.txt
 
 workflows:
   version: 2
   letsgo:
     jobs:
-      - tests
+      - build
+      - tests:
+          requires:
+            - build
