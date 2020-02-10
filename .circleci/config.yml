@@ -60,7 +60,9 @@ jobs:
           name: check app
           command: |
             mkdir test-results
-            curl http://localhost:5080/api/v1/swagger.json > test-results/output.txt
+            while docker-compose logs haprestio | tail -n 1 | grep "Waiting for consul"; do sleep 1; done
+            sleep 1
+            docker-compose exec -T haprestio /bin/sh -c "curl http://localhost:5080/api/v1/swagger.json" > test-results/output.txt
 
 workflows:
   version: 2
