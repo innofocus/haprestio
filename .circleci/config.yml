@@ -24,9 +24,11 @@ jobs:
       - run:
           name: build container
           command: |
-            docker-compose build
+            cd docker
+            docker build -t innofocus/haprestio:latest .
             echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
             docker push innofocus/haprestio:latest
+            cd -
 
       - run:
           name: artefacts dir
