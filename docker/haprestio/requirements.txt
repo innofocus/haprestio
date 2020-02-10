@@ -1,1 +1,12 @@
-requirements.txt
+cryptography
+requests
+Flask
+Flask-HTTPAuth
+flask-restplus
+flask-jwt-extended
+python-consul
+pyaml
+bcrypt
+pytest
+google-cloud-pubsub
+google-cloud-storage

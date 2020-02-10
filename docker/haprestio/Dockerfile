@@ -11,7 +11,7 @@ RUN python3 /tmp/get-pip.py
 
 # circleci deps
 COPY circleci.requirements.txt /tmp
-RUN pip install -r /tmp/circleci.requirements.txt
+RUN apk add $(cat /tmp/circleci.requirements.txt)
 
 # installs haprestio
 COPY requirements.txt /tmp
