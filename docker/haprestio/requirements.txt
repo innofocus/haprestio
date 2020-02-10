@@ -1,8 +1,0 @@
-cryptography
-requests
-python-consul
-pyaml
-bcrypt
-pytest
-google-cloud-pubsub
-google-cloud-storage

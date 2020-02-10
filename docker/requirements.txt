@@ -1,2 +1,10 @@
-docker
-docker-compose
+Werkzeug==0.16.0
+grpcio
+bcrypt
+cryptography
+flask-jwt-extended
+grpc-google-iam-v1
+PyYAML
+googleapis-common-protos
+MarkupSafe
+pyrsistent

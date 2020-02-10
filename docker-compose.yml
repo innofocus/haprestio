@@ -4,7 +4,7 @@ services:
 
   haprestio:
     image: haprestio:latest
-    build: haprestio
+    build: docker
     networks:
       - haprestio-test
     ports:
