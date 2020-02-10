@@ -9,8 +9,13 @@ RUN apk add --no-cache python3-dev musl-dev openssl-dev libffi-dev g++
 RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 RUN python3 /tmp/get-pip.py
 
+# circleci deps
+COPY circleci.requirements.txt /tmp
+RUN pip install -r /tmp/circleci.requirements.txt
+
 # installs haprestio
-RUN pip install grpcio bcrypt cryptography flask-jwt-extended grpc-google-iam-v1 PyYAML googleapis-common-protos MarkupSafe pyrsistent
+COPY requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt
 COPY *.whl /tmp
 RUN pip install /tmp/*whl
 
