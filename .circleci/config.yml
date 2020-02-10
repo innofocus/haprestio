@@ -57,9 +57,19 @@ jobs:
             docker-compose up -d
 
       - run:
-          name: check app
+          name: artefacts dir
           command: |
             mkdir test-results
+
+      - store_test_results:
+         path: test-results
+      - store_artifacts:
+         path: test-results
+         destination: tr1
+
+      - run:
+          name: check app
+          command: |
             while docker-compose logs haprestio | tail -n 1 | grep "Waiting for consul"; do sleep 1; done
             sleep 1
             docker-compose exec -T haprestio /bin/sh -c "curl http://localhost:5080/api/v1/swagger.json" > test-results/output.txt
