@@ -1,0 +1,4 @@
+---
+- hosts: lb7-a
+  roles:
+    - haprestio

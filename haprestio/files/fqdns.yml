@@ -1,0 +1,59 @@
+alpha.that.com:
+  backend:
+  - balance roundrobin
+  - option ssl-hello-chk
+  - server srv01 10.23.64.6:443 weight 1 maxconn 100 check
+  - server srv02 10.23.64.5:443 weight 1 maxconn 100 check
+  fqdn: alpha.that.com
+  mode: http
+  owner: nico
+  state: publish
+  
+beta.that.com:
+  backend:
+  - balance roundrobin
+  - option httpchk
+  - server haproxylocal 127.0.0.1:8282 weight 1 maxconn 100
+  fqdn: beta.that.com
+  mode: http
+  owner: vpod
+  state: publish
+
+gamma.that.com:
+  fqdn: gamma.that.com
+  backend:
+  - balance roundrobin
+  - option ssl-hello-chk
+  - server srv01 10.23.192.47:443 weight 1 maxconn 100 check
+  mode: http
+  owner: vpod
+  state: publish
+
+delta.that.com:
+  fqdn: delta.that.com
+  backend:
+  - balance roundrobin
+  - option ssl-hello-chk
+  - server srv01 10.23.192.47:443 weight 1 maxconn 100 check
+  mode: http
+  owner: vpod
+  state: publish
+
+epsilon.that.com:
+  fqdn: epsilon.that.com
+  backend:
+  - balance roundrobin
+  - option ssl-hello-chk
+  - server srv01 10.23.192.47:443 weight 1 maxconn 100 check
+  mode: http
+  owner: vpod
+  state: publish
+
+lambda.that.com:
+  fqdn: lambda.that.com
+  backend:
+  - balance roundrobin
+  - server netbox 10.23.192.39:9000 weight 1 maxconn 100 check-ssl ssl verify none
+  mode: http
+  owner: vpod
+  state: publish

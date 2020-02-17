@@ -1,0 +1,4 @@
+Werkzeug==0.16.0
+bcrypt
+cryptography
+flask-jwt-extended
