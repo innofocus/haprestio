@@ -46,7 +46,6 @@ jobs:
           name: push package
           command: |
             pip3 install twine
-            python3 setup.py sdist
             twine upload -u $PYPI_USER -p $PYPI_PASSWORD dist/*
 
 workflows:
