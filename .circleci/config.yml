@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  buildntestnpush:
     docker:
       - image: circleci/python:buster
     steps:
@@ -22,8 +22,6 @@ jobs:
           command: |
             cd docker
             docker build -t innofocus/haprestio:latest .
-            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
-            docker push innofocus/haprestio:latest
             cd -
 
       - run:
@@ -33,42 +31,19 @@ jobs:
             ./build.sh
             cd -
 
-  tests:
-    docker:
-      - image: circleci/python:buster
-
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-
       - run:
-          name: artefacts dir
+          name: run tests
           command: |
-            mkdir test-results
-
-      - store_test_results:
-         path: test-results
-      - store_artifacts:
-         path: test-results
-         destination: tr1
-
-      - run:
-          name: run compose
-          command: |
-            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
             docker-compose up --exit-code-from testing --abort-on-container-exit
 
-  # TODOs
-  #functionals:
-  # testing haproxy correct running
-
+      - run:
+          name: push container
+          command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
+            docker push innofocus/haprestio:latest
 
 workflows:
   version: 2
-  buildntests:
+  bntnp:
     jobs:
-      - build
-      - tests:
-          requires:
-            - build
+      - buildntestnpush
