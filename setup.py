@@ -35,6 +35,9 @@ with open('haprestio/infos/version.txt', "w") as f:
     f.write('.'.join(version))
     f.close()
 
+version_num=".".join(version[:3])
+version_name=version[3]
+
 subprocess.run('rm -rf build dist', shell=True)
 
 data_files = [ '/'.join(x[0].split('/')[1:])+"/*" for x in os.walk('haprestio/files') ]
@@ -43,12 +46,12 @@ data_files.append('infos/*')
 
 setup(
     name='haprestio',
-    version='.'.join(version),
+    version=version_num,
     entry_points={"console_scripts": ['haprestio = haprestio.main:main']},
     description='rest api controlling haproxy on consul',
     long_description=readme,
     author='Caius Crypt',
-    author_email='caius.crypt<at>gmail.com',
+    author_email='caius.crypt@gmail.com',
     url='https://github.com/innofocus/haprestio',
     license=license,
     include_package_data=True,
