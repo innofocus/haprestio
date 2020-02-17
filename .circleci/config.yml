@@ -42,6 +42,13 @@ jobs:
             echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
             docker push innofocus/haprestio:latest
 
+      - run:
+          name: push package
+          command: |
+            pip3 install twine
+            python3 setup.py sdist
+            twine upload -u $PYPI_USER -p $PYPI_PASSWORD dist/*
+
 workflows:
   version: 2
   bntnp:
