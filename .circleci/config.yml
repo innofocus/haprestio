@@ -1,0 +1,74 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:buster
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: build pip package
+          command: |
+            ./build.sh
+
+      - run:
+          name: build container haprestio
+          command: |
+            cd docker
+            docker build -t innofocus/haprestio:latest .
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
+            docker push innofocus/haprestio:latest
+            cd -
+
+      - run:
+          name: build container testing
+          command: |
+            cd tests
+            ./build.sh
+            cd -
+
+  tests:
+    docker:
+      - image: circleci/python:buster
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: artefacts dir
+          command: |
+            mkdir test-results
+
+      - store_test_results:
+         path: test-results
+      - store_artifacts:
+         path: test-results
+         destination: tr1
+
+      - run:
+          name: run compose
+          command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USER --password-stdin
+            docker-compose up --exit-code-from testing --abort-on-container-exit
+
+  # TODOs
+  #functionals:
+  # testing haproxy correct running
+
+
+workflows:
+  version: 2
+  buildntests:
+    jobs:
+      - build
+      - tests:
+          requires:
+            - build

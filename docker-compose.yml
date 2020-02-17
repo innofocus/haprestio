@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  haprestio:
+    image: innofocus/haprestio:latest
+    networks:
+      - haprestio-test
+    ports:
+      - "5080:5080"
+      - "80:80"
+      - "443:443"
+      - "8282:8282"
+
+  testing:
+    image: testing
+    networks:
+      - haprestio-test
+
+  consul-server-bootstrap:
+    image: consul:latest
+    networks:
+      - haprestio-test
+    ports:
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"
+      - "8600:8600/udp"
+    command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0"
+
+networks:
+  haprestio-test:

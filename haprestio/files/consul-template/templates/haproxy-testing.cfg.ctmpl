@@ -1,0 +1,56 @@
+# {{ plugin "/etc/haprestio/consul-template/helpers/haproxy-certs.py" }}
+# {{ range ls "haproxy/running/certs" }}{{ end }}
+{{ $spiid := env "SPIID" }}
+{{ $testfolder := printf "haproxy/testing/%s" $spiid }}
+# testfolder : {{ $testfolder }}
+
+frontend redirect
+  redirect scheme https code 301
+
+frontend passtcp
+  bind *:443
+  mode tcp
+  option tcplog
+  log /dev/log local0 debug
+  tcp-request inspect-delay 5s
+  tcp-request content accept if { req_ssl_hello_type 1 }
+{{ range ls (printf "%s/frontends-tcp-extended" $testfolder) }}
+  {{ .Value }}
+{{ end }}
+{{ range ls (printf "%s/frontends-tcp" $testfolder) }}
+  use_backend {{ .Value }}-tcp if { req_ssl_sni -i {{ .Key }} }
+{{ end }}
+  default_backend supermario
+
+backend supermario
+  mode tcp
+  option ssl-hello-chk
+  server localpipe 127.0.0.1:445
+
+frontend localpipe
+  bind 127.0.0.1:445 ssl crt supermario.pem crt-list /etc/haproxy/conf.d/certlist.txt{{ range ls (printf "%s/certs" $testfolder) }} crt /etc/ssl/testing/{{ .Key }}.pem{{ end }} alpn h2,http/1.1,http/1.0
+{{ keyOrDefault "haproxy/casting/config/localpipe" "  mode http\n  option httplog\n  log /dev/log local0 debug\n  acl haprestio-acl hdr(host) -i haprestio.that.com\n  use_backend haprestio-backend if haprestio-acl" }}
+{{ range ls (printf "%s/frontends-http" $testfolder) }}
+  acl {{ .Value }} hdr(host) -i {{ .Key }}
+  use_backend {{ .Value }}-http if {{ .Value }}
+{{ end }}
+{{ range ls (printf "%s/frontends-http-extended" $testfolder) }}
+  {{ .Value }}
+{{ end }}
+
+
+{{ range ls (printf "%s/backends-tcp" $testfolder) }}
+backend {{ .Key }}-tcp
+  mode tcp
+{{ .Value | regexReplaceAll "^" "  " | regexReplaceAll "\n" "\n  " }}
+{{ end }}
+
+{{ range ls (printf "%s/backends-http" $testfolder) }}
+backend {{ .Key }}-http
+{{ .Value | regexReplaceAll "^" "  " | regexReplaceAll "\n" "\n  " }}
+{{ end }}
+
+backend haprestio-backend
+  mode http
+  balance roundrobin
+  server haprestio localhost:5080 weight 1 maxconn 100
